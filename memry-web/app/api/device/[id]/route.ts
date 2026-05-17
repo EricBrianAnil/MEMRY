@@ -14,7 +14,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase-server'
-
+export const maxDuration = 10;
 const RATE_LIMIT_MINUTES = 28  // allow slightly under 30min
 
 export async function GET(
@@ -44,7 +44,7 @@ export async function GET(
     .single()
 
   if (ping?.last_request) {
-    const lastMs   = new Date(ping.last_request).getTime()
+    const lastMs = new Date(ping.last_request).getTime()
     const diffMins = (now.getTime() - lastMs) / 60000
     if (diffMins < RATE_LIMIT_MINUTES) {
       // Still return the image — just don't hammer the pipeline
@@ -57,9 +57,9 @@ export async function GET(
   const batteryMv = parseInt(req.headers.get('X-Battery-Mv') ?? '0') || null
 
   await supabase.from('device_pings').upsert({
-    device_id:    deviceId,
+    device_id: deviceId,
     last_request: now.toISOString(),
-    battery_mv:   batteryMv,
+    battery_mv: batteryMv,
   }, { onConflict: 'device_id' })
 
   // ── 4. Get active photo ───────────────────────────────────────
@@ -79,14 +79,14 @@ export async function GET(
   }
 
   // ── 5. ETag check — skip download if unchanged ────────────────
-  const etag          = `"memry-${photo.id}"`
-  const clientEtag    = req.headers.get('If-None-Match')
+  const etag = `"memry-${photo.id}"`
+  const clientEtag = req.headers.get('If-None-Match')
 
   if (clientEtag === etag) {
     return new NextResponse(null, {
       status: 304,
       headers: {
-        'ETag':          etag,
+        'ETag': etag,
         'X-Sleep-Hours': String(device.sleep_hours),
         'Cache-Control': 'no-store',
       },
@@ -109,11 +109,11 @@ export async function GET(
   return new NextResponse(bin, {
     status: 200,
     headers: {
-      'Content-Type':   'application/octet-stream',
+      'Content-Type': 'application/octet-stream',
       'Content-Length': String(bin.length),
-      'ETag':           etag,
-      'X-Sleep-Hours':  String(device.sleep_hours),
-      'Cache-Control':  'no-store',
+      'ETag': etag,
+      'X-Sleep-Hours': String(device.sleep_hours),
+      'Cache-Control': 'no-store',
       // CORS for breadboard testing (firmware dev)
       'Access-Control-Allow-Origin': '*',
     },

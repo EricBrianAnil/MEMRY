@@ -9,8 +9,9 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClientInstance } from '@/lib/supabase-server'
-import { createAdminClient }          from '@/lib/supabase-server'
+import { createAdminClient } from '@/lib/supabase-server'
 import { processImage, binPath, previewPath } from '@/lib/imageProcess'
+export const maxDuration = 30; // Allow up to 30 seconds for image processing
 
 export async function POST(req: NextRequest) {
   const supabase = await createServerClientInstance()
@@ -23,9 +24,9 @@ export async function POST(req: NextRequest) {
 
   // ── Parse form ────────────────────────────────────────────────
   const form = await req.formData()
-  const file      = form.get('file')      as File   | null
-  const deviceId  = form.get('device_id') as string | null
-  const caption   = form.get('caption')   as string | null
+  const file = form.get('file') as File | null
+  const deviceId = form.get('device_id') as string | null
+  const caption = form.get('caption') as string | null
   const setActive = form.get('set_active') === 'true'
 
   if (!file || !deviceId) {
@@ -65,7 +66,7 @@ export async function POST(req: NextRequest) {
 
   // ── Generate photo ID ─────────────────────────────────────────
   const photoId = crypto.randomUUID()
-  const admin   = createAdminClient()
+  const admin = createAdminClient()
 
   // ── Upload .bin ───────────────────────────────────────────────
   const { error: binErr } = await admin.storage
@@ -104,13 +105,13 @@ export async function POST(req: NextRequest) {
   const { data: photo, error: insertErr } = await admin
     .from('photos')
     .insert({
-      id:             photoId,
-      device_id:      deviceId,
-      uploaded_by:    user.id,
-      storage_path:   binPath(deviceId, photoId),
-      preview_path:   previewPath(deviceId, photoId),
-      caption:        caption || null,
-      is_active:      setActive,
+      id: photoId,
+      device_id: deviceId,
+      uploaded_by: user.id,
+      storage_path: binPath(deviceId, photoId),
+      preview_path: previewPath(deviceId, photoId),
+      caption: caption || null,
+      is_active: setActive,
     })
     .select()
     .single()

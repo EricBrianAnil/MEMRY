@@ -200,8 +200,24 @@ html, body {
 
 /* Desktop wide screens (>1400px) - let content breathe but cap extremes */
 @media (min-width: 1400px) {
-  .memry-main > div {
-    padding-left: clamp(32px, 4vw, 80px);
-    padding-right: clamp(32px, 4vw, 80px);
+  .memry-main > div > div {
+    padding-left: 64px !important;
+    padding-right: 64px !important;
+  }
+}
+
+/* Tablet padding reduction */
+@media (max-width: 1024px) {
+  .memry-main > div > div {
+    padding-left: 32px !important;
+    padding-right: 32px !important;
+  }
+}
+
+/* Mobile padding reduction */
+@media (max-width: 768px) {
+  .memry-main > div > div {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
   }
 }

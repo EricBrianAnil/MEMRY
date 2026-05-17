@@ -1,22 +1,15 @@
-import Sidebar from '@/components/layout/Sidebar'
-import { createServerClientInstance } from '@/lib/supabase-server'
-import { redirect } from 'next/navigation'
+import './globals.css'
+import type { Metadata } from 'next'
 
-export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const supabase = await createServerClientInstance()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/auth')
+export const metadata: Metadata = {
+  title: 'MEMRY — WiFi e-ink fridge magnet',
+  description: 'A digital showroom for memories',
+}
 
-  const name    = user.user_metadata?.full_name ?? user.email?.split('@')[0] ?? 'You'
-  const initial = name[0]?.toUpperCase() ?? 'A'
-
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div style={{ display: 'flex', minHeight: '100vh' }}>
-      <Sidebar userName={name} userInitial={initial} />
-      <div className="memry-main" style={{ flex: 1, minHeight: "100vh", width: '100%' }}>
-        {children}
-      </div>
-    </div>
+    <html lang="en">
+      <body>{children}</body>
+    </html>
   )
 }
-export const dynamic = 'force-dynamic'

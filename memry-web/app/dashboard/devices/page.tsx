@@ -6,11 +6,11 @@ import DeviceListClient from './DeviceListClient'
 
 export const dynamic = 'force-dynamic'
 
-function getStatus(lastRequest: string | null, sleepHours: number) {
+function getStatus(lastRequest: string | null, sleepHours: number): 'online' | 'sleeping' | 'offline' {
   if (!lastRequest) return 'offline'
   const h = (Date.now() - new Date(lastRequest).getTime()) / 3600000
-  if (h < 0.5)             return 'online'
-  if (h < sleepHours * 1.5)return 'sleeping'
+  if (h < 0.5) return 'online'
+  if (h < sleepHours * 1.5) return 'sleeping'
   return 'offline'
 }
 
@@ -35,9 +35,9 @@ export default async function DevicesPage() {
   )
 
   const enriched = (devices ?? []).map((d: { id: string; name: string; sleep_hours: number; created_at: string }) => {
-    const ping   = pingMap[d.id]
+    const ping = pingMap[d.id]
     const status = getStatus(ping?.last_request ?? null, d.sleep_hours)
-    const bPct   = ping?.battery_mv
+    const bPct = ping?.battery_mv
       ? Math.min(100, Math.max(0, Math.round((ping.battery_mv - 3000) / (4200 - 3000) * 100)))
       : null
     return { id: d.id, name: d.name, sleep_hours: d.sleep_hours, created_at: d.created_at, status, battery_pct: bPct }

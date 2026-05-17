@@ -55,7 +55,12 @@ export default function DashboardGrid({
     name,
 }: DashboardGridProps) {
     return (
-        <div style={{ padding: "32px", width: "100%" }}>
+        <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
+            <div style={{ 
+                width: "100%", 
+                maxWidth: "1400px", 
+                padding: "32px 48px",
+            }}>
             {/* Page header */}
             <div
                 style={{
@@ -554,6 +559,7 @@ export default function DashboardGrid({
                     </div>
                 </Link>
             </div>
+        </div>
         </div>
     );
 }

@@ -8,14 +8,20 @@ const SVC  = process.env.SUPABASE_SERVICE_ROLE_KEY!
 
 export async function createServerClientInstance() {
   const cookieStore = await cookies()
+  
   return createServerClient(URL, ANON, {
     cookies: {
-      getAll()             { return cookieStore.getAll() },
+      getAll() {
+        return cookieStore.getAll()
+      },
       setAll(cookiesToSet) {
         try {
-          cookiesToSet.forEach(({ name, value, options }) =>
-            cookieStore.set(name, value, options))
-        } catch {}
+          cookiesToSet.forEach(({ name, value, options }) => {
+            cookieStore.set(name, value, options)
+          })
+        } catch (error) {
+          // Cookie setting might fail in Server Components, that's okay
+        }
       },
     },
   })
